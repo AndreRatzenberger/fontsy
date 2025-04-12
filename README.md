@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
-A fun interactive ASCII art generator for your terminal that lets you explore, preview, and export text in hundreds of different font styles. Fonty was a small exercise in so called "vibe coding" with our own agent framework called Flock. 
+A fun interactive ASCII art generator for your terminal that lets you explore, preview, and export text in hundreds of different font styles. Fontsy was a small exercise in so called "vibe coding" with our own agent framework called Flock. 
 
 **Almost everything was written by Flock.** 
 
@@ -23,6 +23,10 @@ https://github.com/whiteducksoftware/flock
 - Showcase mode to view your text in all available fonts
 - Clipboard integration for quick copying
 - Rich, colorful terminal interface
+
+<p align="center">
+  <img src="docs/html_export.png" width="800" />
+</p>
 
 ## 🚀 Quick Start
 
