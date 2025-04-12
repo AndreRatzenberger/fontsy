@@ -10,7 +10,7 @@ https://github.com/whiteducksoftware/flock
 
 
 <p align="center">
-  <img src="docs/image.png" width="800" />
+  <img src="docs/fontsy.png" width="800" />
 </p>
 
 ## ✨ Features
@@ -19,13 +19,20 @@ https://github.com/whiteducksoftware/flock
 - Preview text in different font categories: 3D, block, banner, bubble, digital, script, and more
 - Two display modes: grid (compact) and list (detailed)
 - Mark fonts as favorites for quick access
-- Export creations to HTML, markdown, or plain text
 - Showcase mode to view your text in all available fonts
 - Clipboard integration for quick copying
 - Rich, colorful terminal interface
 
+- Export creations to HTML, markdown, or plain text
+
 <p align="center">
   <img src="docs/html_export.png" width="800" />
+</p>
+
+- Live input mode to see your text rendered in real-time
+
+<p align="center">
+  <img src="docs/input.png" width="800" />
 </p>
 
 ## 🚀 Quick Start

@@ -76,13 +76,6 @@ def main() -> None:
     # Load favorites from file if it exists
     favorite_fonts = set()
 
-
-
-
-
-
-
-
     # Function to save favorites to disk
     def save_favorites():
         try:
@@ -302,6 +295,8 @@ def main() -> None:
         "- Type [bold]favorites[/bold] to see only your favorite fonts",
         "- Type [bold]clear[/bold] to clear all your favorites",
         "- Type [bold]title[/bold] to show the welcome screen again",
+        "- Type [bold]input [number][/bold] (e.g. 'input 3') to enter real-time typing mode with the font at position 3 in current view",
+        "  • Type [bold]exit[/bold] or press Ctrl+C while in typing mode to return to main menu",
         "- Export commands:",
         "  • [bold]export html[/bold] - Export last view as HTML",
         "  • [bold]export text[/bold] - Export last view as plain text",
@@ -309,9 +304,6 @@ def main() -> None:
         "- Type [bold]help[/bold] to show this help message",
         "- Type [bold]quit[/bold] to exit"
     ])
-
-
-
 
     last_input = ""
     used_fonts = set()
@@ -551,6 +543,120 @@ def main() -> None:
             command_parts = user_input.lower().split()
             handle_showcase(command_parts)
             continue
+        
+        # Handle input command
+        if user_input.lower().startswith('input '):
+            try:
+                font_number = int(user_input.split()[1])
+                
+                # Determine which font list to use (current view, showcase, or favorites)
+                if showcase_fonts and 1 <= font_number <= len(showcase_fonts):
+                    font_name = showcase_fonts[font_number - 1]
+                elif current_fonts and 1 <= font_number <= len(current_fonts):
+                    font_name = current_fonts[font_number - 1]
+                else:
+                    console.print(f"[yellow]No font with number {font_number} in current view.[/yellow]")
+                    continue
+                
+                # Import required packages for character-by-character input
+                try:
+                    import sys
+                    import termios
+                    import tty
+                    import select
+                    char_by_char_available = True
+                except ImportError:
+                    char_by_char_available = False
+                
+                # Clear screen
+                console.clear()
+                console.print(f"[bold green]Interactive typing mode with font: [bold white]{font_name}[/bold white][/bold green]")
+                console.print("[yellow]Type anything and see it rendered instantly in real-time.[/yellow]")
+                console.print("[yellow]Type 'exit' or press Ctrl+C to return to main menu.[/yellow]")
+                
+                if char_by_char_available:
+                    # Save terminal settings
+                    old_settings = termios.tcgetattr(sys.stdin)
+                    
+                    try:
+                        # Change terminal settings for character-by-character input
+                        tty.setcbreak(sys.stdin.fileno())
+                        
+                        current_text = ""
+                        backspace_char = chr(127)  # ASCII for backspace
+                        
+                        # Interactive typing loop - character by character
+                        while True:
+                            # Check if there's input available
+                            if select.select([sys.stdin], [], [], 0)[0]:
+                                char = sys.stdin.read(1)
+                                
+                                # Check for Ctrl+C (ASCII 3) to exit
+                                if ord(char) == 3:
+                                    raise KeyboardInterrupt
+                                
+                                # Handle backspace
+                                if char == backspace_char and current_text:
+                                    current_text = current_text[:-1]
+                                # Only add printable characters
+                                elif char.isprintable():
+                                    current_text += char
+                                
+                                # Clear screen and redraw
+                                console.clear()
+                                console.print(f"[bold green]Interactive typing mode with font: [bold white]{font_name}[/bold white][/bold green]")
+                                console.print("[yellow]Type anything and see it rendered instantly in real-time.[/yellow]")
+                                console.print("[yellow]Type 'exit' or press Ctrl+C to return to main menu.[/yellow]")
+                                console.print(f"[dim]Current text: {current_text}[/dim]")
+                                
+                                # Check if user typed "exit" to quit
+                                if current_text.lower() == "exit":
+                                    break
+                                
+                                if current_text:
+                                    try:
+                                        art = text2art(current_text, font=font_name)
+                                        color = random.choice(colors)
+                                        console.print(f"[{color}]{art}[/{color}]")
+                                    except Exception as e:
+                                        console.print(f"[red]Error rendering text: {e}[/red]")
+                    finally:
+                        # Restore terminal settings before returning
+                        termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
+                else:
+                    # Fallback method if character-by-character input isn't available
+                    try:
+                        current_text = ""
+                        while True:
+                            typed_text = Prompt.ask("\n[dim]Type something (or 'exit' to quit)[/dim]")
+                            
+                            # Check if user wants to exit
+                            if typed_text.lower() == "exit":
+                                break
+                                
+                            current_text = typed_text
+                            console.clear()
+                            console.print(f"[bold green]Interactive typing mode with font: [bold white]{font_name}[/bold white][/bold green]")
+                            console.print("[yellow]Type anything and see it rendered (type 'exit' or press Ctrl+C to quit).[/yellow]")
+                            
+                            try:
+                                art = text2art(current_text, font=font_name)
+                                color = random.choice(colors)
+                                console.print(f"[{color}]{art}[/{color}]")
+                            except Exception as e:
+                                console.print(f"[red]Error rendering text: {e}[/red]")
+                    except KeyboardInterrupt:
+                        pass
+                
+                # Exit handling
+                console.clear()
+                console.print("[yellow]Exited interactive typing mode.[/yellow]")
+                show_title_screen()
+                
+                continue
+            except (IndexError, ValueError):
+                console.print("[yellow]Please specify a valid font number: 'input 5'[/yellow]")
+                continue
 
         # Check if user is trying to favorite a font by number
         if user_input.isdigit():
@@ -696,6 +802,7 @@ def main() -> None:
         console.print("[dim]Type 'export html', 'export text', or 'export md' to save this view.[/dim]")
         console.print(f"[dim]Mode: {display_mode.upper()} | Category: {current_category.upper()}{favorite_status}[/dim]")
 
+        
 
 if __name__ == "__main__":
     main()
