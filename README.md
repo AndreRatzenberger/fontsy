@@ -8,8 +8,10 @@ A fun interactive ASCII art generator for your terminal that lets you explore, p
 
 https://github.com/whiteducksoftware/flock
 
-> This is a workshop project for our dev productivity hands-on workshop!
 
+<p align="center">
+  <img src="docs/image.png" width="800" />
+</p>
 
 ## ✨ Features
 
